@@ -30,9 +30,9 @@ func (lw *loggingResponseWriter) WriteHeader(statusCode int) {
 
 func HttpLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		//  move this to main package, and inhereit from app
+		logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 		start := time.Now()
-		// Setting Up a Default Logger for Middleware
-		slogger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 		responseData := &responseData{
 			status: 0,
@@ -54,7 +54,7 @@ func HttpLogger(next http.Handler) http.Handler {
 		size := lw.responseData.size
 		duration := time.Since(start)
 
-		slogger.Info(
+		logger.Info(
 			"incoming request",
 			slog.Int("status", status),
 			slog.String("method", method),
